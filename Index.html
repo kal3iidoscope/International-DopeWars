@@ -1,1 +1,2425 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W.D.W. | Worldwide Drug Wars</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #090909;
+    color: #f2f2f2;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+#app {
+    min-height: 100vh;
+}
+
+.screen {
+    display: none;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.screen.active {
+    display: block;
+}
+
+.menu {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 7vh;
+}
+
+.logo {
+    font-size: clamp(42px, 10vw, 90px);
+    font-weight: 900;
+    letter-spacing: 8px;
+    color: #39ff14;
+    text-shadow:
+        0 0 8px #39ff14,
+        0 0 20px #39ff14;
+}
+
+.subtitle {
+    color: #bbb;
+    letter-spacing: 4px;
+    margin-bottom: 45px;
+}
+
+.panel {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px auto;
+    box-shadow: 0 0 25px rgba(0,0,0,.5);
+}
+
+.menu button {
+    display: block;
+    width: min(450px, 100%);
+    margin: 12px auto;
+    padding: 15px;
+    border: 1px solid #39ff14;
+    background: #101510;
+    color: #39ff14;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.menu button:hover {
+    background: #39ff14;
+    color: #000;
+}
+
+.top10 {
+    text-align: left;
+}
+
+.top10 h2 {
+    text-align: center;
+    color: #39ff14;
+}
+
+.score-row {
+    display: grid;
+    grid-template-columns: 55px 1fr 130px;
+    gap: 10px;
+    padding: 9px;
+    border-bottom: 1px solid #222;
+}
+
+.game-wrap {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.header {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.stat {
+    background: #111;
+    border: 1px solid #292929;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    color: #888;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    display: block;
+    margin-top: 4px;
+    font-weight: bold;
+}
+
+.market {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.market-title {
+    padding: 15px;
+    background: #151515;
+    border-bottom: 1px solid #333;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.market-row {
+    display: grid;
+    grid-template-columns: 1fr 130px 170px;
+    gap: 10px;
+    align-items: center;
+    padding: 13px;
+    border-bottom: 1px solid #222;
+}
+
+.market-row:last-child {
+    border-bottom: 0;
+}
+
+.price {
+    color: #39ff14;
+    font-weight: bold;
+}
+
+.controls {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+}
+
+.controls button {
+    width: 38px;
+    height: 34px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background: #1b1b1b;
+    color: white;
+}
+
+.controls button:hover {
+    background: #333;
+}
+
+.controls input {
+    width: 60px;
+    text-align: center;
+    background: #080808;
+    border: 1px solid #444;
+    color: white;
+    padding: 7px;
+}
+
+.action-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.action-bar button {
+    padding: 13px;
+    border: 1px solid #444;
+    background: #151515;
+    color: white;
+    border-radius: 7px;
+}
+
+.action-bar button:hover {
+    border-color: #39ff14;
+    color: #39ff14;
+}
+
+.message {
+    min-height: 65px;
+    margin-top: 15px;
+    background: #101010;
+    border-left: 4px solid #39ff14;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.82);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-box {
+    width: min(600px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #111;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.modal-box h2 {
+    color: #39ff14;
+}
+
+.modal-box button {
+    margin-top: 10px;
+    padding: 11px 18px;
+    background: #191919;
+    border: 1px solid #555;
+    color: white;
+    border-radius: 6px;
+}
+
+.modal-box button:hover {
+    border-color: #39ff14;
+    color: #39ff14;
+}
+
+input,
+select {
+    background: #090909;
+    border: 1px solid #444;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    width: 100%;
+    margin: 7px 0 15px;
+}
+
+label {
+    color: #aaa;
+    font-size: 13px;
+}
+
+.location-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+}
+
+.location-list button {
+    text-align: left;
+}
+
+.bank-amount {
+    font-size: 25px;
+    color: #39ff14;
+    margin: 10px 0;
+}
+
+.danger {
+    color: #ff5555;
+}
+
+.good {
+    color: #39ff14;
+}
+
+@media (max-width: 700px) {
+    .header {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .market-row {
+        grid-template-columns: 1fr;
+    }
+
+    .action-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .logo {
+        letter-spacing: 4px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+    <!-- MAIN MENU -->
+    <section id="menuScreen" class="screen active">
+        <div class="menu">
+
+            <div class="logo">W.D.W.</div>
+
+            <div class="subtitle">
+                WORLDWIDE DRUG WARS
+            </div>
+
+            <div class="panel">
+                <div class="top10">
+                    <h2>GLOBAL TOP 10</h2>
+
+                    <div id="top10">
+                        <div class="score-row">
+                            <b>#</b>
+                            <b>PLAYER</b>
+                            <b>SCORE</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="showStart()">PLAY</button>
+            <button onclick="showLeaderboard()">FULL LEADERBOARD</button>
+            <button onclick="showHowToPlay()">HOW TO PLAY</button>
+            <button onclick="showSettings()">SETTINGS</button>
+
+        </div>
+    </section>
+
+    <!-- START SCREEN -->
+    <section id="startScreen" class="screen">
+        <div class="menu">
+
+            <div class="logo" style="font-size:50px;">W.D.W.</div>
+
+            <div class="panel">
+
+                <h2>START NEW GAME</h2>
+
+                <label>PLAYER NAME</label>
+                <input id="playerName" maxlength="16" placeholder="Enter your name">
+
+                <label>GAME LENGTH</label>
+                <select id="gameLength">
+                    <option value="30">30 DAYS</option>
+                    <option value="60">60 DAYS</option>
+                    <option value="90">90 DAYS</option>
+                    <option value="180">180 DAYS</option>
+                    <option value="365">1 YEAR</option>
+                    <option value="730">2 YEARS</option>
+                    <option value="1095">3 YEARS</option>
+                    <option value="1460">4 YEARS</option>
+                    <option value="1825">5 YEARS</option>
+                </select>
+
+                <label>STARTING LOCATION</label>
+                <select id="startingLocation"></select>
+
+                <button onclick="startGame()">START GAME</button>
+                <button onclick="showScreen('menuScreen')">BACK</button>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="gameScreen" class="screen">
+
+        <div class="game-wrap">
+
+            <div class="header">
+
+                <div class="stat">
+                    <span class="stat-label">Location</span>
+                    <span class="stat-value" id="statLocation"></span>
+                </div>
+
+                <div class="stat">
+                    <span class="stat-label">Day</span>
+                    <span class="stat-value" id="statDay"></span>
+                </div>
+
+                <div class="stat">
+                    <span class="stat-label">Visits</span>
+                    <span class="stat-value" id="statVisits"></span>
+                </div>
+
+                <div class="stat">
+                    <span class="stat-label">Cash</span>
+                    <span class="stat-value" id="statCash"></span>
+                </div>
+
+                <div class="stat">
+                    <span class="stat-label">Bank</span>
+                    <span class="stat-value" id="statBank"></span>
+                </div>
+
+                <div class="stat">
+                    <span class="stat-label">Health</span>
+                    <span class="stat-value" id="statHealth"></span>
+                </div>
+
+            </div>
+
+            <div class="stat" style="margin-bottom:15px;">
+                <span class="stat-label">Pocket Capacity</span>
+                <span class="stat-value" id="statCapacity"></span>
+            </div>
+
+            <div class="market">
+
+                <div class="market-title">
+                    MARKET
+                </div>
+
+                <div id="marketRows"></div>
+
+            </div>
+
+            <div class="action-bar">
+
+                <button onclick="openTravel()">
+                    ✈ TRAVEL
+                </button>
+
+                <button onclick="openBank()">
+                    🏦 BANK
+                </button>
+
+                <button onclick="openHospital()">
+                    🏥 HOSPITAL
+                </button>
+
+                <button onclick="randomEvent(true)">
+                    🎲 EVENT
+                </button>
+
+            </div>
+
+            <div class="message" id="message">
+                Welcome to Worldwide Drug Wars.
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- LEADERBOARD -->
+    <section id="leaderboardScreen" class="screen">
+
+        <div class="menu">
+
+            <div class="logo" style="font-size:50px;">
+                GLOBAL LEADERBOARD
+            </div>
+
+            <div class="panel">
+
+                <div id="leaderboardRows"></div>
+
+            </div>
+
+            <button onclick="showScreen('menuScreen')">
+                BACK
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal">
+
+        <div class="modal-box" id="modalContent"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   W.D.W. WORLDWIDE DRUG WARS
+   Core single-player game engine
+   ========================================================= */
+
+/* ---------- LOCATIONS ---------- */
+
+const LOCATIONS = [
+
+    {
+        country: "Canada",
+        city: "Toronto",
+        districts: [
+            "Downtown",
+            "Kensington",
+            "Yorkville",
+            "The Junction",
+            "Harbourfront"
+        ]
+    },
+
+    {
+        country: "Canada",
+        city: "Windsor",
+        districts: [
+            "Downtown",
+            "Walkerville",
+            "Ford City",
+            "Riverside",
+            "West End"
+        ]
+    },
+
+    {
+        country: "Canada",
+        city: "Montreal",
+        districts: [
+            "Old Montreal",
+            "Downtown",
+            "Plateau",
+            "Mile End",
+            "Griffintown"
+        ]
+    },
+
+    {
+        country: "Canada",
+        city: "Vancouver",
+        districts: [
+            "Downtown",
+            "Gastown",
+            "Kitsilano",
+            "Commercial Drive",
+            "Waterfront"
+        ]
+    },
+
+    {
+        country: "USA",
+        city: "New York",
+        districts: [
+            "Manhattan",
+            "Brooklyn",
+            "Queens",
+            "Bronx",
+            "Harlem"
+        ]
+    },
+
+    {
+        country: "USA",
+        city: "Chicago",
+        districts: [
+            "The Loop",
+            "Wicker Park",
+            "Hyde Park",
+            "Pilsen",
+            "River North"
+        ]
+    },
+
+    {
+        country: "USA",
+        city: "Los Angeles",
+        districts: [
+            "Downtown",
+            "Hollywood",
+            "Venice",
+            "Koreatown",
+            "Echo Park"
+        ]
+    },
+
+    {
+        country: "USA",
+        city: "Las Vegas",
+        districts: [
+            "The Strip",
+            "Downtown",
+            "Fremont",
+            "Arts District",
+            "Paradise"
+        ]
+    },
+
+    {
+        country: "UK",
+        city: "London",
+        districts: [
+            "Soho",
+            "Camden",
+            "Shoreditch",
+            "Westminster",
+            "Brixton"
+        ]
+    },
+
+    {
+        country: "France",
+        city: "Paris",
+        districts: [
+            "Montmartre",
+            "Le Marais",
+            "Latin Quarter",
+            "Bastille",
+            "Belleville"
+        ]
+    },
+
+    {
+        country: "Germany",
+        city: "Berlin",
+        districts: [
+            "Mitte",
+            "Kreuzberg",
+            "Neukolln",
+            "Prenzlauer Berg",
+            "Friedrichshain"
+        ]
+    },
+
+    {
+        country: "Netherlands",
+        city: "Amsterdam",
+        districts: [
+            "Centrum",
+            "Jordaan",
+            "De Pijp",
+            "Oost",
+            "Noord"
+        ]
+    },
+
+    {
+        country: "Japan",
+        city: "Tokyo",
+        districts: [
+            "Shibuya",
+            "Shinjuku",
+            "Akihabara",
+            "Ginza",
+            "Harajuku"
+        ]
+    },
+
+    {
+        country: "Australia",
+        city: "Sydney",
+        districts: [
+            "CBD",
+            "Surry Hills",
+            "Newtown",
+            "The Rocks",
+            "Darling Harbour"
+        ]
+    },
+
+    {
+        country: "Brazil",
+        city: "Rio de Janeiro",
+        districts: [
+            "Centro",
+            "Copacabana",
+            "Ipanema",
+            "Lapa",
+            "Botafogo"
+        ]
+    },
+
+    {
+        country: "Mexico",
+        city: "Mexico City",
+        districts: [
+            "Centro",
+            "Roma",
+            "Condesa",
+            "Polanco",
+            "Coyoacan"
+        ]
+    },
+
+    {
+        country: "South Africa",
+        city: "Cape Town",
+        districts: [
+            "City Bowl",
+            "Woodstock",
+            "Camps Bay",
+            "Observatory",
+            "Waterfront"
+        ]
+    },
+
+    {
+        country: "UAE",
+        city: "Dubai",
+        districts: [
+            "Downtown",
+            "Deira",
+            "Marina",
+            "Jumeirah",
+            "Bur Dubai"
+        ]
+    }
+
+];
+
+/* ---------- ITEMS ---------- */
+
+const ITEMS = [
+    {
+        name: "Weed",
+        min: 80,
+        max: 350
+    },
+    {
+        name: "Hash",
+        min: 150,
+        max: 600
+    },
+    {
+        name: "Pills",
+        min: 200,
+        max: 900
+    },
+    {
+        name: "Coke",
+        min: 600,
+        max: 2500
+    },
+    {
+        name: "Heroin",
+        min: 800,
+        max: 3500
+    },
+    {
+        name: "Acid",
+        min: 250,
+        max: 1200
+    },
+    {
+        name: "Speed",
+        min: 150,
+        max: 750
+    },
+    {
+        name: "Mushrooms",
+        min: 100,
+        max: 500
+    }
+];
+
+/* ---------- GAME STATE ---------- */
+
+let game = null;
+
+function newGameState(name, length, location) {
+
+    return {
+
+        username: name,
+
+        gameLength: length,
+
+        day: 1,
+
+        visits: 0,
+
+        maxVisits: 5,
+
+        cash: 2000,
+
+        bank: 0,
+
+        health: 100,
+
+        capacity: 100,
+
+        inventory: {},
+
+        location: location,
+
+        prices: {},
+
+        gameOver: false
+
+    };
+
+}
+
+/* ---------- HELPERS ---------- */
+
+function money(value) {
+
+    return "$" + Math.max(0, Math.floor(value)).toLocaleString();
+
+}
+
+function random(min, max) {
+
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+
+}
+
+function chance(percent) {
+
+    return Math.random() * 100 < percent;
+
+}
+
+function showScreen(id) {
+
+    document.querySelectorAll(".screen")
+        .forEach(screen => screen.classList.remove("active"));
+
+    document.getElementById(id)
+        .classList.add("active");
+
+}
+
+function message(text) {
+
+    document.getElementById("message").innerHTML = text;
+
+}
+
+/* ---------- LOCATION DISPLAY ---------- */
+
+function locationName(location) {
+
+    return `${location.city}, ${location.country} • ${location.district}`;
+
+}
+
+/* ---------- MARKET ---------- */
+
+function generateMarket() {
+
+    game.prices = {};
+
+    ITEMS.forEach(item => {
+
+        let price = random(item.min, item.max);
+
+        /*
+         * Larger daily swings are intentional.
+         * Every item rolls independently.
+         */
+
+        if (chance(12)) {
+
+            price *= random(150, 250) / 100;
+
+        }
+
+        if (chance(12)) {
+
+            price *= random(35, 70) / 100;
+
+        }
+
+        game.prices[item.name] =
+            Math.max(10, Math.floor(price));
+
+    });
+
+}
+
+function renderMarket() {
+
+    const container =
+        document.getElementById("marketRows");
+
+    container.innerHTML = "";
+
+    ITEMS.forEach(item => {
+
+        const owned =
+            game.inventory[item.name] || 0;
+
+        const price =
+            game.prices[item.name];
+
+        const row =
+            document.createElement("div");
+
+        row.className = "market-row";
+
+        row.innerHTML = `
+
+            <div>
+                <strong>${item.name}</strong>
+                <br>
+                <small>
+                    Carrying: ${owned}
+                </small>
+            </div>
+
+            <div class="price">
+                ${money(price)}
+            </div>
+
+            <div class="controls">
+
+                <button onclick="changeQuantity('${item.name}', -1)">
+                    −
+                </button>
+
+                <input
+                    id="qty-${item.name}"
+                    type="number"
+                    min="0"
+                    value="0"
+                >
+
+                <button onclick="changeQuantity('${item.name}', 1)">
+                    +
+                </button>
+
+                <button onclick="buy('${item.name}')">
+                    BUY
+                </button>
+
+                <button onclick="sell('${item.name}')">
+                    SELL
+                </button>
+
+            </div>
+
+        `;
+
+        container.appendChild(row);
+
+    });
+
+}
+
+function changeQuantity(item, amount) {
+
+    const input =
+        document.getElementById("qty-" + item);
+
+    let value =
+        Number(input.value) || 0;
+
+    value += amount;
+
+    if (value < 0) value = 0;
+
+    input.value = value;
+
+}
+
+/* ---------- /* ---------- INVENTORY ---------- */
+
+function inventoryCount() {
+
+    return Object.values(game.inventory)
+        .reduce((a, b) => a + b, 0);
+
+}
+
+function buy(itemName) {
+
+    const input =
+        document.getElementById("qty-" + itemName);
+
+    let quantity =
+        Number(input.value) || 0;
+
+    if (quantity <= 0) {
+
+        message("Choose how many units you want to buy.");
+
+        return;
+
+    }
+
+    const available =
+        game.capacity - inventoryCount();
+
+    if (quantity > available) {
+
+        message(
+            `You only have ${available} pocket spaces left.`
+        );
+
+        return;
+
+    }
+
+    const price =
+        game.prices[itemName];
+
+    const total =
+        price * quantity;
+
+    if (total > game.cash) {
+
+        message("You don't have enough cash.");
+
+        return;
+
+    }
+
+    game.cash -= total;
+
+    game.inventory[itemName] =
+        (game.inventory[itemName] || 0) + quantity;
+
+    input.value = 0;
+
+    message(
+        `Bought ${quantity} ${itemName} for ${money(total)}.`
+    );
+
+    updateGame();
+
+}
+
+function sell(itemName) {
+
+    const input =
+        document.getElementById("qty-" + itemName);
+
+    let quantity =
+        Number(input.value) || 0;
+
+    const owned =
+        game.inventory[itemName] || 0;
+
+    if (quantity <= 0) {
+
+        message("Choose how many units you want to sell.");
+
+        return;
+
+    }
+
+    if (quantity > owned) {
+
+        message(
+            `You only have ${owned} ${itemName}.`
+        );
+
+        return;
+
+    }
+
+    const price =
+        game.prices[itemName];
+
+    const total =
+        price * quantity;
+
+    game.cash += total;
+
+    game.inventory[itemName] -= quantity;
+
+    input.value = 0;
+
+    message(
+        `Sold ${quantity} ${itemName} for ${money(total)}.`
+    );
+
+    updateGame();
+
+}
+
+/* ---------- TRAVEL ---------- */
+
+function openTravel() {
+
+    let html = `
+        <h2>TRAVEL</h2>
+        <p>Choose your next district.</p>
+        <div class="location-list">
+    `;
+
+    LOCATIONS.forEach(city => {
+
+        city.districts.forEach(district => {
+
+            const destination = {
+                country: city.country,
+                city: city.city,
+                district: district
+            };
+
+            html += `
+                <button onclick='travelTo(${JSON.stringify(destination)})'>
+                    ${city.city}<br>
+                    <small>${district}</small>
+                </button>
+            `;
+
+        });
+
+    });
+
+    html += `
+        </div>
+        <button onclick="closeModal()">CLOSE</button>
+    `;
+
+    openModal(html);
+
+}
+
+function travelTo(destination) {
+
+    closeModal();
+
+    if (
+        destination.city === game.location.city &&
+        destination.district === game.location.district
+    ) {
+
+        message("You're already here.");
+
+        return;
+
+    }
+
+    const international =
+        destination.country !== game.location.country;
+
+    let travelCost =
+        international
+            ? random(250, 1800)
+            : random(10, 150);
+
+    if (travelCost > game.cash) {
+
+        message(
+            `You need ${money(travelCost)} for the trip.`
+        );
+
+        return;
+
+    }
+
+    game.cash -= travelCost;
+
+    game.location = destination;
+
+    game.visits++;
+
+    generateMarket();
+
+    message(
+        `Travelled to <strong>${locationName(destination)}</strong>.
+        Travel cost: ${money(travelCost)}.`
+    );
+
+    updateGame();
+
+    const policeChance =
+        international ? 15 : 7;
+
+    if (chance(policeChance)) {
+
+        setTimeout(() => {
+
+            policeEncounter();
+
+        }, 400);
+
+    } else if (chance(20)) {
+
+        setTimeout(() => {
+
+            randomEvent(false);
+
+        }, 400);
+
+    }
+
+    checkDay();
+
+}
+
+/* ---------- DAY SYSTEM ---------- */
+
+function checkDay() {
+
+    if (game.visits >= game.maxVisits) {
+
+        game.day++;
+
+        game.visits = 0;
+
+        generateMarket();
+
+        message(
+            `<strong>DAY ${game.day}</strong><br>
+             The markets have regenerated.`
+        );
+
+        if (game.day > game.gameLength) {
+
+            endGame();
+
+        }
+
+    }
+
+}
+
+/* ---------- POLICE ---------- */
+
+function policeEncounter() {
+
+    openModal(`
+
+        <h2 class="danger">
+            🚨 POLICE ENCOUNTER
+        </h2>
+
+        <p>
+            An officer has spotted you.
+        </p>
+
+        <p>
+            What do you do?
+        </p>
+
+        <button onclick="runFromPolice()">
+            🏃 RUN
+        </button>
+
+        <button onclick="fightPolice()">
+            👊 FIGHT
+        </button>
+
+    `);
+
+}
+
+function runFromPolice() {
+
+    closeModal();
+
+    if (chance(62)) {
+
+        message(
+            "You managed to get away before they could stop you."
+        );
+
+    } else {
+
+        busted();
+
+    }
+
+}
+
+function fightPolice() {
+
+    closeModal();
+
+    if (chance(48)) {
+
+        const damage =
+            random(8, 25);
+
+        game.health =
+            Math.max(1, game.health - damage);
+
+        message(
+            `You fought your way out.
+            You lost ${damage} health.`
+        );
+
+    } else {
+
+        busted();
+
+    }
+
+    updateGame();
+
+}
+
+function busted() {
+
+    const cashLoss =
+        Math.min(
+            game.cash,
+            Math.floor(game.cash * random(20, 70) / 100)
+        );
+
+    game.cash -= cashLoss;
+
+    let stashLoss = 0;
+
+    Object.keys(game.inventory)
+        .forEach(item => {
+
+            if (game.inventory[item] > 0 && chance(65)) {
+
+                const loss =
+                    Math.max(
+                        1,
+                        Math.floor(
+                            game.inventory[item] *
+                            random(20, 70) /
+                            100
+                        )
+                    );
+
+                game.inventory[item] -= loss;
+
+                stashLoss += loss;
+
+            }
+
+        });
+
+    message(`
+        <strong class="danger">BUSTED!</strong><br>
+        Police confiscated ${money(cashLoss)}
+        and ${stashLoss} units of your stash.
+        <br><br>
+        Your bank account was untouched.
+    `);
+
+    updateGame();
+  
+/* ---------- RANDOM EVENTS ---------- */
+
+function randomEvent(manual) {
+
+    if (!game) return;
+
+    const events = [
+
+        {
+            weight: 20,
+            run: () => {
+
+                const amount = random(50, 500);
+
+                game.cash += amount;
+
+                return `
+                    💵 You found ${money(amount)}
+                    on the street.
+                `;
+
+            }
+        },
+
+        {
+            weight: 10,
+            run: () => {
+
+                const item =
+                    ITEMS[random(0, ITEMS.length - 1)];
+
+                const amount = random(1, 5);
+
+                const room =
+                    game.capacity - inventoryCount();
+
+                const found =
+                    Math.min(amount, room);
+
+                if (found <= 0) {
+
+                    const cash = random(50, 200);
+
+                    game.cash += cash;
+
+                    return `
+                        🎒 You found some goods,
+                        but your pockets are full.
+                        Someone paid you ${money(cash)} instead.
+                    `;
+
+                }
+
+                game.inventory[item.name] =
+                    (game.inventory[item.name] || 0) + found;
+
+                return `
+                    🎒 You found ${found}
+                    units of ${item.name}.
+                `;
+
+            }
+        },
+
+        {
+            weight: 12,
+            run: () => {
+
+                const healAmount = random(10, 30);
+
+                game.health =
+                    Math.min(
+                        100,
+                        game.health + healAmount
+                    );
+
+                return `
+                    ❤️ You found a first-aid kit.
+                    Health +${healAmount}.
+                `;
+
+            }
+        },
+
+        {
+            weight: 12,
+            run: () => {
+
+                if (game.capacity >= 500) {
+
+                    const cash = random(100, 500);
+
+                    game.cash += cash;
+
+                    return `
+                        🎁 You found ${money(cash)}.
+                        Your pockets are already maxed out.
+                    `;
+
+                }
+
+                const upgrades = [
+                    25,
+                    25,
+                    50,
+                    50,
+                    100
+                ];
+
+                const increase =
+                    upgrades[
+                        random(0, upgrades.length - 1)
+                    ];
+
+                game.capacity =
+                    Math.min(
+                        500,
+                        game.capacity + increase
+                    );
+
+                return `
+                    👖 You found an extra pocket.
+                    Capacity +${increase}.
+                `;
+
+            }
+
+        },
+
+        {
+            weight: 8,
+            run: () => {
+
+                const amount = random(500, 3000);
+
+                game.cash += amount;
+
+                return `
+                    🍀 Jackpot!
+                    You walked into ${money(amount)}.
+                `;
+
+            }
+
+        },
+
+        {
+            weight: 10,
+            run: () => {
+
+                const item =
+                    ITEMS[random(0, ITEMS.length - 1)];
+
+                const discount =
+                    Math.floor(
+                        game.prices[item.name] * 0.45
+                    );
+
+                game.prices[item.name] =
+                    Math.max(
+                        10,
+                        discount
+                    );
+
+                return `
+                    📦 A supplier is dumping
+                    ${item.name}.
+                    The price has crashed.
+                `;
+
+            }
+
+        },
+
+        {
+            weight: 8,
+            run: () => {
+
+                const item =
+                    ITEMS[random(0, ITEMS.length - 1)];
+
+                game.prices[item.name] *= 2;
+
+                return `
+                    📈 Sudden buying frenzy!
+                    ${item.name} prices have exploded.
+                `;
+
+            }
+
+        },
+
+        {
+            weight: 7,
+            run: () => {
+
+                const amount = random(100, 700);
+
+                game.cash += amount;
+
+                return `
+                    🧾 Someone accidentally
+                    handed you ${money(amount)}.
+                `;
+
+            }
+
+        },
+
+        {
+            weight: 6,
+            run: () => {
+
+                const damage = random(5, 15);
+
+                game.health =
+                    Math.max(
+                        1,
+                        game.health - damage
+                    );
+
+                return `
+                    🥊 A street argument went badly.
+                    Health -${damage}.
+                `;
+
+            }
+
+        },
+
+        {
+            weight: 5,
+            run: () => {
+
+                const amount = random(50, 250);
+
+                game.cash =
+                    Math.max(
+                        0,
+                        game.cash - amount
+                    );
+
+                return `
+                    👜 Someone grabbed
+                    ${money(amount)}
+                    while you weren't looking.
+                `;
+
+            }
+
+        }
+
+    ];
+
+    let total =
+        events.reduce(
+            (sum, event) => sum + event.weight,
+            0
+        );
+
+    let roll =
+        Math.random() * total;
+
+    let selected = events[0];
+
+    for (const event of events) {
+
+        roll -= event.weight;
+
+        if (roll <= 0) {
+
+            selected = event;
+
+            break;
+
+        }
+
+    }
+
+    const result =
+        selected.run();
+
+    message(result);
+
+    updateGame();
+
+}
+
+
+/* ---------- BANK ---------- */
+
+function openBank() {
+
+    openModal(`
+
+        <h2>🏦 BANK</h2>
+
+        <div class="bank-amount">
+            ${money(game.bank)}
+        </div>
+
+        <p>
+            Money stored in the bank is protected
+            from police confiscation and robbery.
+        </p>
+
+        <label>AMOUNT</label>
+
+        <input
+            id="bankAmount"
+            type="number"
+            min="0"
+            placeholder="Enter amount"
+        >
+
+        <button onclick="deposit()">
+            DEPOSIT
+        </button>
+
+        <button onclick="withdraw()">
+            WITHDRAW
+        </button>
+
+        <button onclick="closeModal()">
+            CLOSE
+        </button>
+
+    `);
+
+}
+
+
+function deposit() {
+
+    const amount =
+        Number(
+            document.getElementById("bankAmount").value
+        ) || 0;
+
+    if (amount <= 0 || amount > game.cash) {
+
+        message("Invalid deposit amount.");
+
+        closeModal();
+
+        return;
+
+    }
+
+    game.cash -= amount;
+
+    game.bank += amount;
+
+    closeModal();
+
+    message(
+        `Deposited ${money(amount)} safely in the bank.`
+    );
+
+    updateGame();
+
+}
+
+
+function withdraw() {
+
+    const amount =
+        Number(
+            document.getElementById("bankAmount").value
+        ) || 0;
+
+    if (amount <= 0 || amount > game.bank) {
+
+        message("Invalid withdrawal amount.");
+
+        closeModal();
+
+        return;
+
+    }
+
+    game.bank -= amount;
+
+    game.cash += amount;
+
+    closeModal();
+
+    message(
+        `Withdrew ${money(amount)} from the bank.`
+    );
+
+    updateGame();
+
+}
+
+
+/* ---------- HOSPITAL ---------- */
+
+function openHospital() {
+
+    const cost = random(50, 250);
+
+    openModal(`
+
+        <h2>🏥 HOSPITAL</h2>
+
+        <p>
+            Basic treatment will restore your health.
+        </p>
+
+        <p>
+            Cost: <strong>${money(cost)}</strong>
+        </p>
+
+        <button onclick="heal(${cost})">
+            GET TREATMENT
+        </button>
+
+        <button onclick="closeModal()">
+            CANCEL
+        </button>
+
+    `);
+
+}
+
+
+function heal(cost) {
+
+    if (game.cash < cost) {
+
+        closeModal();
+
+        message(
+            "You don't have enough cash for treatment."
+        );
+
+        return;
+
+    }
+
+    game.cash -= cost;
+
+    game.health = 100;
+
+    closeModal();
+
+    message(
+        "You received treatment. Health restored to 100."
+    );
+
+    updateGame();
+  /* ---------- GAME UPDATE ---------- */
+
+function updateGame() {
+
+    if (!game) return;
+
+    document.getElementById("statLocation")
+        .textContent =
+        `${game.location.city} • ${game.location.district}`;
+
+    document.getElementById("statDay")
+        .textContent =
+        `${game.day} / ${game.gameLength}`;
+
+    document.getElementById("statVisits")
+        .textContent =
+        `${game.visits} / ${game.maxVisits}`;
+
+    document.getElementById("statCash")
+        .textContent =
+        money(game.cash);
+
+    document.getElementById("statBank")
+        .textContent =
+        money(game.bank);
+
+    document.getElementById("statHealth")
+        .textContent =
+        game.health;
+
+    document.getElementById("statCapacity")
+        .textContent =
+        `${inventoryCount()} / ${game.capacity}`;
+
+    renderMarket();
+
+    saveGame();
+
+}
+
+
+/* ---------- SAVE GAME ---------- */
+
+function saveGame() {
+
+    if (!game || game.gameOver) return;
+
+    try {
+
+        localStorage.setItem(
+            "wdwSave",
+            JSON.stringify(game)
+        );
+
+    } catch (error) {
+
+        console.log("Save unavailable.");
+
+    }
+
+}
+
+
+/* ---------- LOAD SAVED GAME ---------- */
+
+function loadSavedGame() {
+
+    try {
+
+        const saved =
+            localStorage.getItem("wdwSave");
+
+        if (!saved) return false;
+
+        const parsed =
+            JSON.parse(saved);
+
+        if (!parsed || !parsed.username) {
+
+            return false;
+
+        }
+
+        game = parsed;
+
+        showScreen("gameScreen");
+
+        updateGame();
+
+        message(
+            "Your saved game has been restored."
+        );
+
+        return true;
+
+    } catch (error) {
+
+        return false;
+
+    }
+
+}
+
+
+/* ---------- END GAME ---------- */
+
+function calculateScore() {
+
+    const stashValue =
+        Object.keys(game.inventory)
+            .reduce(
+                (total, item) =>
+                    total +
+                    (
+                        (game.inventory[item] || 0) *
+                        (game.prices[item] || 0)
+                    ),
+                0
+            );
+
+    return Math.floor(
+        game.cash +
+        game.bank +
+        stashValue
+    );
+
+}
+
+
+function endGame() {
+
+    game.gameOver = true;
+
+    const score =
+        calculateScore();
+
+    saveScore(score);
+
+    try {
+
+        localStorage.removeItem("wdwSave");
+
+    } catch (error) {}
+
+    openModal(`
+
+        <h2>🏁 GAME OVER</h2>
+
+        <p>
+            Your ${game.gameLength}-day game has ended.
+        </p>
+
+        <p>
+            FINAL SCORE
+        </p>
+
+        <div class="bank-amount">
+            ${money(score)}
+        </div>
+
+        <p>
+            Cash: ${money(game.cash)}<br>
+            Bank: ${money(game.bank)}
+        </p>
+
+        <button
+            onclick="closeModal(); showScreen('menuScreen'); loadTop10();"
+        >
+            MAIN MENU
+        </button>
+
+    `);
+
+}
+
+
+/* ---------- LEADERBOARD DATA ---------- */
+
+function getScores() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem("wdwScores") || "[]"
+        );
+
+    } catch (error) {
+
+        return [];
+
+    }
+
+}
+
+
+function saveScore(score) {
+
+    let scores =
+        getScores();
+
+    const existing =
+        scores.find(
+            item =>
+                item.username.toLowerCase() ===
+                game.username.toLowerCase()
+        );
+
+    const entry = {
+
+        username: game.username,
+
+        score: score,
+
+        gameLength: game.gameLength,
+
+        days: game.day,
+
+        timestamp: Date.now()
+
+    };
+
+
+    if (!existing) {
+
+        scores.push(entry);
+
+    } else if (score > existing.score) {
+
+        existing.score = score;
+
+        existing.gameLength =
+            game.gameLength;
+
+        existing.days =
+            game.day;
+
+        existing.timestamp =
+            Date.now();
+
+    }
+
+
+    scores.sort(
+        (a, b) =>
+            b.score - a.score
+    );
+
+
+    scores =
+        scores.slice(0, 100);
+
+
+    localStorage.setItem(
+        "wdwScores",
+        JSON.stringify(scores)
+    );
+
+}
+
+
+/* ---------- TOP 10 ---------- */
+
+function loadTop10() {
+
+    const scores =
+        getScores()
+            .slice(0, 10);
+
+    const container =
+        document.getElementById("top10");
+
+    let html = `
+
+        <div class="score-row">
+            <b>#</b>
+            <b>PLAYER</b>
+            <b>SCORE</b>
+        </div>
+
+    `;
+
+
+    if (scores.length === 0) {
+
+        html += `
+
+            <div class="score-row">
+                <span>1</span>
+                <span>No scores yet</span>
+                <span>---</span>
+            </div>
+
+        `;
+
+    }
+
+
+    scores.forEach(
+        (score, index) => {
+
+            html += `
+
+                <div class="score-row">
+
+                    <span>
+                        ${index + 1}
+                    </span>
+
+                    <span>
+                        ${escapeHtml(score.username)}
+                    </span>
+
+                    <span>
+                        ${money(score.score)}
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    container.innerHTML = html;
+/* ---------- FULL LEADERBOARD ---------- */
+
+function showLeaderboard() {
+
+    const scores =
+        getScores();
+
+    let html = `
+
+        <h2>GLOBAL LEADERBOARD</h2>
+
+        <div class="score-row">
+            <b>RANK</b>
+            <b>PLAYER</b>
+            <b>SCORE</b>
+        </div>
+
+    `;
+
+    if (scores.length === 0) {
+
+        html += `
+            <p>No completed games yet.</p>
+        `;
+
+    }
+
+    scores.forEach(
+        (score, index) => {
+
+            html += `
+
+                <div class="score-row">
+
+                    <span>
+                        ${index + 1}
+                    </span>
+
+                    <span>
+                        ${escapeHtml(score.username)}
+                    </span>
+
+                    <span>
+                        ${money(score.score)}
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+    document.getElementById(
+        "leaderboardRows"
+    ).innerHTML = html;
+
+    showScreen("leaderboardScreen");
+
+}
+
+
+/* ---------- SETTINGS ---------- */
+
+function showSettings() {
+
+    openModal(`
+
+        <h2>⚙ SETTINGS</h2>
+
+        <p>
+            W.D.W. settings will be expanded as the
+            online version is connected.
+        </p>
+
+        <button onclick="closeModal()">
+            CLOSE
+        </button>
+
+    `);
+
+}
+
+
+/* ---------- HOW TO PLAY ---------- */
+
+function showHowToPlay() {
+
+    openModal(`
+
+        <h2>HOW TO PLAY</h2>
+
+        <p>
+            Buy low. Sell high. Travel.
+            Don't get busted.
+        </p>
+
+        <p>
+            You begin with cash and limited pocket space.
+            Each district has its own randomly generated
+            market.
+        </p>
+
+        <p>
+            Every location transition counts as one visit.
+            After five visits, a new game day begins and
+            the markets regenerate.
+        </p>
+
+        <p>
+            Banks protect deposited money from police
+            confiscation and robberies.
+        </p>
+
+        <p>
+            Police encounters can result in either
+            escaping or getting busted.
+        </p>
+
+        <p>
+            Getting busted does NOT automatically end
+            your game.
+        </p>
+
+        <button onclick="closeModal()">
+            GOT IT
+        </button>
+
+    `);
+
+}
+
+
+/* ---------- MODALS ---------- */
+
+function openModal(content) {
+
+    document.getElementById(
+        "modalContent"
+    ).innerHTML = content;
+
+    document.getElementById(
+        "modal"
+    ).classList.add("active");
+
+}
+
+
+function closeModal() {
+
+    document.getElementById(
+        "modal"
+    ).classList.remove("active");
+
+}
+
+
+/* ---------- START GAME ---------- */
+
+function showStart() {
+
+    const select =
+        document.getElementById(
+            "startingLocation"
+        );
+
+    select.innerHTML = "";
+
+    LOCATIONS.forEach(city => {
+
+        city.districts.forEach(district => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                JSON.stringify({
+                    country: city.country,
+                    city: city.city,
+                    district: district
+                });
+
+            option.textContent =
+                `${city.city}, ${city.country} • ${district}`;
+
+            select.appendChild(option);
+
+        });
+
+    });
+
+    showScreen("startScreen");
+
+}
+
+
+function startGame() {
+
+    const username =
+        document.getElementById(
+            "playerName"
+        ).value.trim();
+
+    if (username.length < 3) {
+
+        alert(
+            "Please enter a player name with at least 3 characters."
+        );
+
+        return;
+
+    }
+
+    const length =
+        Number(
+            document.getElementById(
+                "gameLength"
+            ).value
+        );
+
+    const location =
+        JSON.parse(
+            document.getElementById(
+                "startingLocation"
+            ).value
+        );
+
+    game =
+        newGameState(
+            username,
+            length,
+            location
+        );
+
+    generateMarket();
+
+    showScreen("gameScreen");
+
+    updateGame();
+
+    message(
+        `<strong>Welcome to W.D.W.</strong><br>
+        Your worldwide game begins now.`
+    );
+
+}
+
+
+/* ---------- SECURITY / TEXT SAFETY ---------- */
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text;
+
+    return div.innerHTML;
+
+}
+
+
+/* ---------- INITIALIZE GAME ---------- */
+
+loadTop10();
+
+</script>
+
+</body>
+</html>
+}
+
+}
+}
